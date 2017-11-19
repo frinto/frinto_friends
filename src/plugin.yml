@@ -1,0 +1,9 @@
+main: com.frinto.friends.Main
+version: 1.0
+name: frinto_friends
+author: Frinto
+
+commands:
+  friends:
+      description: Friends.
+      usage: /friends add <player>, /friends remove <player>, /friends list
