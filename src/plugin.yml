@@ -6,4 +6,12 @@ author: Frinto
 commands:
   friends:
       description: Friends.
-      usage: /friends add <player>, /friends remove <player>, /friends list
+  fadd:
+        description: Friends.
+        usage: usage /fadd <player>
+  fremove:
+        description: Friends.
+        usage: usage /fremove <player>
+  flist:
+        description: Friends.
+        usage: usage /flist

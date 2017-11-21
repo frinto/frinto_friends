@@ -7,39 +7,28 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
-public class Main extends JavaPlugin{
-    
+public class Main extends JavaPlugin
+{
+
     @Override
     public void onEnable()
     {
         //TODO
-      
+        registerCommands();
     }
+
     @Override
     public void onDisable()
     {
         //TODO
     }
     
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[]args)
+    public void registerCommands()
     {
-        if(label.equalsIgnoreCase("friends"))
-        {
-            if(!(sender instanceof Player))
-            {
-                sender.sendMessage("you are not a player");
-                return false;
-            }
-
-            //TODO
-            Player player = (Player) sender;
-            player.sendMessage("fixed");
-            return true;
-        }
-        
-        return false;
+        getCommand("friends").setExecutor(new FriendCommand());
+        getCommand("fadd").setExecutor(new FriendCommand());
+        getCommand("fremove").setExecutor(new FriendCommand());
+        getCommand("flist").setExecutor(new FriendCommand());
     }
-    
     
 }
