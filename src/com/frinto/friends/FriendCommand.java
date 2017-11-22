@@ -30,9 +30,9 @@ public class FriendCommand implements CommandExecutor
             
             if (label.equalsIgnoreCase("friends"))
             {
-                player.sendMessage("/fadd <name>");
-                player.sendMessage("/fremove <name>");
-                player.sendMessage("/flist");
+                sender.sendMessage("/fadd <name>");
+                sender.sendMessage("/fremove <name>");
+                sender.sendMessage("/flist");
                 return true;
             } else if (label.equalsIgnoreCase("fadd"))
             {
