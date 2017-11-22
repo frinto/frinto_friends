@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="frinto_friends:jar">
-    <output-path>$PROJECT_DIR$/../spigot/plugins/</output-path>
-    <root id="archive" name="frinto_friends.jar">
-      <element id="module-output" name="CORE" />
-    </root>
-  </artifact>
-</component>
