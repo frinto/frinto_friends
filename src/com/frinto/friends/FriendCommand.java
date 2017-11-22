@@ -27,7 +27,7 @@ public class FriendCommand implements CommandExecutor
         
         if(sender instanceof Player)
         {
-<<<<<<< HEAD
+
 	        if(label.equalsIgnoreCase("friends"))
 	        {
 	            player.sendMessage("/fadd <name>");
@@ -122,7 +122,7 @@ public class FriendCommand implements CommandExecutor
 	        sender.sendMessage("Not a player please try again..");
 	        return false;
 	    }
-=======
+
             if (label.equalsIgnoreCase("friends"))
             {
                 player.sendMessage("/fadd <name>");
@@ -224,7 +224,6 @@ public class FriendCommand implements CommandExecutor
             sender.sendMessage("Not a player please try again..");
             return false;
         }
->>>>>>> changes
 
         return false;
     }
