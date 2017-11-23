@@ -171,7 +171,16 @@ public class FriendCommand implements CommandExecutor
 
                                     if (offlinePlayer.hasPlayedBefore())
                                     {
-                                        sender.sendMessage(offlinePlayer.getName());
+                                        String onlineStatus = "Offline";
+                                        if(offlinePlayer.isOnline())
+                                        {
+                                            onlineStatus = " [ONLINE]";
+                                        }else
+                                        {
+                                            onlineStatus = " [OFFLINE]";
+                                        }
+                                        
+                                        sender.sendMessage( ChatColor.GREEN + offlinePlayer.getName() + onlineStatus);
                                     } else
                                     {
                                         sender.sendMessage("player has not played on this server");
