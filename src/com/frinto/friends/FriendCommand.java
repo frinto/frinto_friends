@@ -229,12 +229,22 @@ public class FriendCommand implements CommandExecutor
         {
             if(targetPlayer.isOnline())
             {
-                TextComponent message = new TextComponent( "Click me" );
-                message.setClickEvent( new ClickEvent( ClickEvent.Action.OPEN_URL, "http://spigotmc.org" ));
+                
+                //TESTING TESTING TESTING
+                TextComponent acceptMsg = new TextComponent( "CLICK ME [Accept]" );
+                acceptMsg.setColor(net.md_5.bungee.api.ChatColor.GREEN);
+                acceptMsg.setBold(true);
+                acceptMsg.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/flist" ));
+                TextComponent declineMsg = new TextComponent( "CLICK ME [Decline]" );
+                declineMsg.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND,  "/flist"));
+                declineMsg.setColor(net.md_5.bungee.api.ChatColor.RED);
+                declineMsg.setBold(true);
                 
                 targetPlayer.sendMessage(ChatColor.AQUA + "You recieved a friend request from: " + sender.getName());
 
-                targetPlayer.spigot().sendMessage(message);
+                targetPlayer.spigot().sendMessage(acceptMsg);
+                targetPlayer.spigot().sendMessage(declineMsg);
+                
                 
                 return true; 
             }
