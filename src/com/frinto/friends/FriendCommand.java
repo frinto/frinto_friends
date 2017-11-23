@@ -1,6 +1,5 @@
 package com.frinto.friends;
 
-import me.Stijn.MPCore.Global.api.PlayerAPI;
 import me.Stijn.MPCore.Global.database.MySQLConnection;
 
 import org.bukkit.Bukkit;
@@ -10,8 +9,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
