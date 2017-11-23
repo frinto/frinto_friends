@@ -184,8 +184,8 @@ public class FriendCommand implements CommandExecutor
 
                                 while (resultSet.next())
                                 {
-                                    String test2 = resultSet.getString("target_uuid");
-                                    OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(test2));
+                                    String targetStringUUID = resultSet.getString("target_uuid");
+                                    OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(targetStringUUID));
 
                                     if (offlinePlayer.hasPlayedBefore())
                                     {
