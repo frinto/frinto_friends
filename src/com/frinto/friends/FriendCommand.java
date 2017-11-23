@@ -86,7 +86,7 @@ public class FriendCommand implements CommandExecutor
                 try
                 {
                     MySQLConnection conn2 = new MySQLConnection(Main.getMySQLConnectionDetails());
-                    PreparedStatement ps = conn2.open().prepareStatement("SELECT target_uuid FROM Frinto_Friends WHERE requester_uuid = ?;");
+                    PreparedStatement ps = conn2.open().prepareStatement("SELECT DISTINCT target_uuid FROM Frinto_Friends WHERE requester_uuid = ?;");
                     ps.setString(1, requestUUID);
                     conn2.doQuery(ps, new MySQLConnection.MySQLConnectionBeforeCloseCallback()
                     {
