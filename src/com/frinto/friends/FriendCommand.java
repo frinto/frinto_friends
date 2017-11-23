@@ -201,6 +201,8 @@ public class FriendCommand implements CommandExecutor
                 }
             } else if (label.equalsIgnoreCase("faccept"))
             {
+                player.sendMessage(ChatColor.AQUA + "You have Accepted the friend request!");
+                
                 FriendCommand.statusOfAccept = true;
 
                 if (statusOfAccept)
@@ -236,7 +238,7 @@ public class FriendCommand implements CommandExecutor
                         conn33.doUpdate(ps33);
                         
                         
-                        requesterPlayer.sendMessage("player accepted the friend request and has been added!");
+                        requesterPlayer.sendMessage(ChatColor.AQUA + "player accepted the friend request and has been added!");
                         String nameOfTarget = Bukkit.getServer().getOfflinePlayer(UUID.fromString(targetUUID)).getName();
                         String nameOfRequester = Bukkit.getServer().getOfflinePlayer(UUID.fromString(requestUUID)).getName();
 
@@ -250,6 +252,8 @@ public class FriendCommand implements CommandExecutor
 
             } else if (label.equalsIgnoreCase("fdecline"))
             {
+                player.sendMessage(ChatColor.AQUA + "You have declined the friend request!");
+                
                 FriendCommand.statusOfAccept = false;
                 Player requesterPlayer = Main.requester;
 
@@ -261,7 +265,7 @@ public class FriendCommand implements CommandExecutor
         } else
 
         {
-            sender.sendMessage("Not a player please try again..");
+            sender.sendMessage(ChatColor.RED + "Not a player please try again..");
             return false;
         }
 
