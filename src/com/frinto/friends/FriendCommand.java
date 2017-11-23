@@ -104,7 +104,64 @@ public class FriendCommand implements CommandExecutor
                 player.sendMessage(ChatColor.BLUE + "User " + (nameOfTarget) + " has been added");
             } else if (label.equalsIgnoreCase("fremove"))
             {
-                player.sendMessage(ChatColor.BLUE + "this is for removing friends");
+                String requestUUID = player.getUniqueId().toString();
+
+                if (args.length == 0)
+                {
+                    sender.sendMessage(ChatColor.RED + "please specify the player you which to remove");
+                    sender.sendMessage(ChatColor.RED + "/fremove <name>");
+                } else
+                {
+                    String OfflinePlayerName = null;
+
+                    if(args.length == 0)
+                    {
+                        sender.sendMessage(ChatColor.RED + "please specify the player you which to remove");
+                        sender.sendMessage(ChatColor.RED + "/fremove <name>");
+                    }else
+                    {
+                        OfflinePlayerName = args[0];
+                    }
+
+                    OfflinePlayer op = Bukkit.getServer().getOfflinePlayer(OfflinePlayerName);
+
+
+                    if (op.hasPlayedBefore())
+                    {
+                        targetUUID = op.getUniqueId().toString();
+
+                        try
+                        {
+
+                            MySQLConnection conn = new MySQLConnection(Main.getMySQLConnectionDetails());
+                            PreparedStatement ps = conn.open().prepareStatement("DELETE FROM Frinto_Friends WHERE target_uuid = ?;");
+
+                            
+                            ps.setString(1, targetUUID);
+                            
+                            conn.doUpdate(ps);
+                        } catch (SQLException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    } else
+                    {
+                        sender.sendMessage("player has not played on this server");
+
+                        try
+                        {
+                            throw new PlayerHasNotPlayedBefore("player has not played here before exception");
+                        } catch (PlayerHasNotPlayedBefore playerHasNotPlayedBefore)
+                        {
+                            playerHasNotPlayedBefore.printStackTrace();
+                        }
+                    }
+                }
+
+
+                String nameOfTarget = Bukkit.getServer().getOfflinePlayer(UUID.fromString(targetUUID)).getName();
+
+                player.sendMessage(ChatColor.BLUE + "User " + (nameOfTarget) + " has been removed");
             } else if (label.equalsIgnoreCase("flist"))
             {
                 player.sendMessage(ChatColor.BLUE + "Here is your list of friends: ");

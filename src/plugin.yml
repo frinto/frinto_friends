@@ -5,14 +5,13 @@ author: Frinto
 
 commands:
   friends:
-      description: Friends.
+        description: Friends.
   fadd:
         description: Friends.
-        usage: usage /fadd <player>
+
   fremove:
         description: Friends.
-        usage: usage /fremove <player>
+
   flist:
         description: Friends.
-        usage: usage /flist
         
