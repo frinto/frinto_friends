@@ -167,8 +167,7 @@ public class FriendCommand implements CommandExecutor
                 player.sendMessage(ChatColor.BLUE + "Here is your list of friends: ");
 
                 String requestUUID = player.getUniqueId().toString();
-
-                //TESTING WILL REMOVE ALL THIS CODE LATER!
+                
                 try
                 {
                     MySQLConnection conn2 = new MySQLConnection(Main.getMySQLConnectionDetails());
