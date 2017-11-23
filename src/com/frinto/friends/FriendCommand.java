@@ -3,7 +3,9 @@ package com.frinto.friends;
 import me.Stijn.MPCore.Global.api.PlayerAPI;
 import me.Stijn.MPCore.Global.database.MySQLConnection;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.UUID;
 
 
 public class FriendCommand implements CommandExecutor
@@ -23,7 +26,8 @@ public class FriendCommand implements CommandExecutor
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
         Player player = (Player) sender;
-
+        String targetUUID = null;
+        
         if (sender instanceof Player)
         {
 
@@ -44,13 +48,24 @@ public class FriendCommand implements CommandExecutor
                     sender.sendMessage(ChatColor.RED + "/fadd <name>");
                 } else
                 {
-                    String targetUUID = null;
+                    String OfflinePlayerName = null;
 
-                    targetUUID = PlayerAPI.getPlayerUUID(args[0]);
-
-
-                    if (targetUUID != null)
+                    if(args.length == 0)
                     {
+                        sender.sendMessage(ChatColor.RED + "please specify the player you which to add");
+                        sender.sendMessage(ChatColor.RED + "/fadd <name>");
+                    }else
+                    {
+                        OfflinePlayerName = args[0];
+                    }
+
+                    OfflinePlayer op = Bukkit.getServer().getOfflinePlayer(OfflinePlayerName);
+
+
+                    if (op.hasPlayedBefore())
+                    {
+                        targetUUID = op.getUniqueId().toString();
+                        
                         try
                         {
 
@@ -71,6 +86,8 @@ public class FriendCommand implements CommandExecutor
                         }
                     } else
                     {
+                        sender.sendMessage("player has not played on this server");
+                        
                         try
                         {
                             throw new PlayerHasNotPlayedBefore("player has not played here before exception");
@@ -80,7 +97,19 @@ public class FriendCommand implements CommandExecutor
                         }
                     }
                 }
+                
+                
+                String nameOfTarget = Bukkit.getServer().getOfflinePlayer(UUID.fromString(targetUUID)).getName();
+                
+                player.sendMessage(ChatColor.BLUE + "User " + (nameOfTarget) + " has been added");
+            } else if (label.equalsIgnoreCase("fremove"))
+            {
+                player.sendMessage(ChatColor.BLUE + "this is for removing friends");
+            } else if (label.equalsIgnoreCase("flist"))
+            {
+                player.sendMessage(ChatColor.BLUE + "Here is your list of friends: ");
 
+                String requestUUID = player.getUniqueId().toString();
 
                 //TESTING WILL REMOVE ALL THIS CODE LATER!
                 try
@@ -100,7 +129,16 @@ public class FriendCommand implements CommandExecutor
                                 while (resultSet.next())
                                 {
                                     String test2 = resultSet.getString("target_uuid");
-                                    sender.sendMessage(test2);
+                                    OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(test2));
+                                    
+                                    if(offlinePlayer.hasPlayedBefore())
+                                    {
+                                        sender.sendMessage(offlinePlayer.getName());
+                                    }else
+                                    {
+                                        sender.sendMessage("player has not played on this server");
+                                    }
+                                    
                                     int age = 0;
                                 }
 
@@ -114,15 +152,6 @@ public class FriendCommand implements CommandExecutor
                 {
                     e.printStackTrace();
                 }
-
-
-                player.sendMessage(ChatColor.BLUE + "this is for adding friends");
-            } else if (label.equalsIgnoreCase("fremove"))
-            {
-                player.sendMessage(ChatColor.BLUE + "this is for removing friends");
-            } else if (label.equalsIgnoreCase("flist"))
-            {
-                player.sendMessage(ChatColor.BLUE + "this is for viewing friends");
             }
         } else
 
