@@ -26,7 +26,7 @@ public class FriendCommand implements CommandExecutor
     private static boolean statusOfAccept = false;
     private String requestUUID = null;
     private String targetUUID = null;
-    
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
@@ -45,6 +45,8 @@ public class FriendCommand implements CommandExecutor
             } else if (label.equalsIgnoreCase("fadd"))
             {
                 requestUUID = player.getUniqueId().toString();
+                Main.requester = player;
+
 
                 if (args.length == 0)
                 {
@@ -54,14 +56,10 @@ public class FriendCommand implements CommandExecutor
                 {
                     String OfflinePlayerName = null;
 
-                    if (args.length == 0)
-                    {
-                        sender.sendMessage(ChatColor.RED + "please specify the player you which to add");
-                        sender.sendMessage(ChatColor.RED + "/fadd <name>");
-                    } else
-                    {
-                        OfflinePlayerName = args[0];
-                    }
+
+                    OfflinePlayerName = args[0];
+                    
+
 
                     OfflinePlayer op = Bukkit.getServer().getOfflinePlayer(OfflinePlayerName);
 
@@ -70,8 +68,9 @@ public class FriendCommand implements CommandExecutor
                     {
                         targetUUID = op.getUniqueId().toString();
 
+                        player.sendMessage(ChatColor.RED + "sending friend request to....." + args[0]);
                         sendFriendRequest(sender.getName(), args[0]);
-                        
+
                     } else
                     {
                         sender.sendMessage("player has not played on this server");
@@ -150,7 +149,7 @@ public class FriendCommand implements CommandExecutor
                 player.sendMessage(ChatColor.BLUE + "Here is your list of friends: ");
 
                 requestUUID = player.getUniqueId().toString();
-                
+
                 try
                 {
                     MySQLConnection conn2 = new MySQLConnection(Main.getMySQLConnectionDetails());
@@ -191,16 +190,18 @@ public class FriendCommand implements CommandExecutor
                 {
                     e.printStackTrace();
                 }
-            }else if(label.equalsIgnoreCase("faccept"))
+            } else if (label.equalsIgnoreCase("faccept"))
             {
                 FriendCommand.statusOfAccept = true;
 
-                if(statusOfAccept)
+                if (statusOfAccept)
                 {
                     try
                     {
-                        requestUUID = player.getUniqueId().toString();
-                        
+                        targetUUID = player.getUniqueId().toString();
+                        Player requesterPlayer = Main.requester;
+                        requestUUID = requesterPlayer.getUniqueId().toString();
+
                         MySQLConnection conn = new MySQLConnection(Main.getMySQLConnectionDetails());
                         PreparedStatement ps = conn.open().prepareStatement("INSERT INTO Frinto_Friends (requester_uuid, target_uuid, accept_status, time_stamp) VALUES (?,?,?,?);");
 
@@ -212,23 +213,40 @@ public class FriendCommand implements CommandExecutor
                         ps.setTimestamp(4, ourJavaTimestampObject);
 
                         conn.doUpdate(ps);
-                        sender.sendMessage("player accepted the friend request and has been added!");
-                        String nameOfTarget = Bukkit.getServer().getOfflinePlayer(UUID.fromString(targetUUID)).getName();
 
-                        player.sendMessage(ChatColor.BLUE + "User " + (nameOfTarget) + " has been added");
+                        MySQLConnection conn33 = new MySQLConnection(Main.getMySQLConnectionDetails());
+                        PreparedStatement ps33 = conn33.open().prepareStatement("INSERT INTO Frinto_Friends (requester_uuid, target_uuid, accept_status, time_stamp) VALUES (?,?,?,?);");
+
+                        ps33.setString(1, targetUUID);
+                        ps33.setString(2, requestUUID);
+                        ps33.setInt(3, 0);
+                        Calendar calendar33 = Calendar.getInstance();
+                        java.sql.Timestamp ourJavaTimestampObject33 = new java.sql.Timestamp(calendar.getTime().getTime());
+                        ps33.setTimestamp(4, ourJavaTimestampObject);
+
+                        conn33.doUpdate(ps33);
+                        
+                        
+                        requesterPlayer.sendMessage("player accepted the friend request and has been added!");
+                        String nameOfTarget = Bukkit.getServer().getOfflinePlayer(UUID.fromString(targetUUID)).getName();
+                        String nameOfRequester = Bukkit.getServer().getOfflinePlayer(UUID.fromString(requestUUID)).getName();
+
+                        player.sendMessage(ChatColor.BLUE + "User " + (nameOfRequester) + " has been added");
+                        requesterPlayer.sendMessage(ChatColor.BLUE + "User " + (nameOfTarget) + " has been added");
                     } catch (SQLException e)
                     {
                         e.printStackTrace();
                     }
                 }
-                
-            }else if(label.equalsIgnoreCase("fdecline"))
+
+            } else if (label.equalsIgnoreCase("fdecline"))
             {
                 FriendCommand.statusOfAccept = false;
-                
-                if(statusOfAccept == false)
+                Player requesterPlayer = Main.requester;
+
+                if (statusOfAccept == false)
                 {
-                    sender.sendMessage(ChatColor.RED +"player has declined or hasn't accepted the friend request!");
+                    requesterPlayer.sendMessage(ChatColor.RED + "Player has declined!");
                 }
             }
         } else
@@ -248,28 +266,27 @@ public class FriendCommand implements CommandExecutor
 
         if (targetPlayer != null)
         {
-            
-            if(targetPlayer.isOnline())
+
+            if (targetPlayer.isOnline())
             {
-                
+
                 //TESTING TESTING TESTING
-                TextComponent acceptMsg = new TextComponent( "CLICK ME [Accept]" );
+                TextComponent acceptMsg = new TextComponent("CLICK ME [Accept]");
                 acceptMsg.setColor(net.md_5.bungee.api.ChatColor.GREEN);
                 acceptMsg.setBold(true);
-                acceptMsg.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/faccept" ));
-                TextComponent declineMsg = new TextComponent( "CLICK ME [Decline]" );
-                declineMsg.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND,  "/fdecline"));
+                acceptMsg.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/faccept"));
+                TextComponent declineMsg = new TextComponent("CLICK ME [Decline]");
+                declineMsg.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/fdecline"));
                 declineMsg.setColor(net.md_5.bungee.api.ChatColor.RED);
                 declineMsg.setBold(true);
-                
+
                 targetPlayer.sendMessage(ChatColor.AQUA + "You recieved a friend request from: " + sender.getName());
 
                 targetPlayer.spigot().sendMessage(acceptMsg);
                 targetPlayer.spigot().sendMessage(declineMsg);
-                
+
             }
-        } 
-        else
+        } else
         {
             sender.sendMessage("Player is not online!");
         }
