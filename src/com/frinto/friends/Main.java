@@ -36,6 +36,8 @@ public class Main extends JavaPlugin implements Listener
         getCommand("fadd").setExecutor(new FriendCommand());
         getCommand("fremove").setExecutor(new FriendCommand());
         getCommand("flist").setExecutor(new FriendCommand());
+        getCommand("faccept").setExecutor(new FriendCommand());
+        getCommand("fdecline").setExecutor(new FriendCommand());
     }
     
     public static MySQLConnectionDetails getMySQLConnectionDetails() {

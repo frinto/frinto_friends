@@ -15,3 +15,9 @@ commands:
   flist:
         description: Friends.
         
+  faccept:
+        description: friends.
+        
+  fdecline:
+        description: friends.
+        

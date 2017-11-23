@@ -1,6 +1,11 @@
 package com.frinto.friends;
 
 import me.Stijn.MPCore.Global.database.MySQLConnection;
+
+
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -18,11 +23,14 @@ import java.util.UUID;
 
 public class FriendCommand implements CommandExecutor
 {
+    private static boolean statusOfAccept = false;
+    private String requestUUID = null;
+    private String targetUUID = null;
+    
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
         Player player = (Player) sender;
-        String targetUUID = null;
 
         if (sender instanceof Player)
         {
@@ -36,7 +44,7 @@ public class FriendCommand implements CommandExecutor
                 return true;
             } else if (label.equalsIgnoreCase("fadd"))
             {
-                String requestUUID = player.getUniqueId().toString();
+                requestUUID = player.getUniqueId().toString();
 
                 if (args.length == 0)
                 {
@@ -62,26 +70,8 @@ public class FriendCommand implements CommandExecutor
                     {
                         targetUUID = op.getUniqueId().toString();
 
-                        boolean statusOfRequestCompleted = sendFriendRequest(sender.getName(), args[0]);
-
-                        try
-                        {
-
-                            MySQLConnection conn = new MySQLConnection(Main.getMySQLConnectionDetails());
-                            PreparedStatement ps = conn.open().prepareStatement("INSERT INTO Frinto_Friends (requester_uuid, target_uuid, accept_status, time_stamp) VALUES (?,?,?,?);");
-
-                            ps.setString(1, requestUUID);
-                            ps.setString(2, targetUUID);
-                            ps.setInt(3, 0);
-                            Calendar calendar = Calendar.getInstance();
-                            java.sql.Timestamp ourJavaTimestampObject = new java.sql.Timestamp(calendar.getTime().getTime());
-                            ps.setTimestamp(4, ourJavaTimestampObject);
-
-                            conn.doUpdate(ps);
-                        } catch (SQLException e)
-                        {
-                            e.printStackTrace();
-                        }
+                        sendFriendRequest(sender.getName(), args[0]);
+                        
                     } else
                     {
                         sender.sendMessage("player has not played on this server");
@@ -95,14 +85,9 @@ public class FriendCommand implements CommandExecutor
                         }
                     }
                 }
-
-
-                String nameOfTarget = Bukkit.getServer().getOfflinePlayer(UUID.fromString(targetUUID)).getName();
-
-                player.sendMessage(ChatColor.BLUE + "User " + (nameOfTarget) + " has been added");
             } else if (label.equalsIgnoreCase("fremove"))
             {
-                String requestUUID = player.getUniqueId().toString();
+                requestUUID = player.getUniqueId().toString();
 
                 if (args.length == 0)
                 {
@@ -164,9 +149,8 @@ public class FriendCommand implements CommandExecutor
             {
                 player.sendMessage(ChatColor.BLUE + "Here is your list of friends: ");
 
-                String requestUUID = player.getUniqueId().toString();
-
-                //TESTING WILL REMOVE ALL THIS CODE LATER!
+                requestUUID = player.getUniqueId().toString();
+                
                 try
                 {
                     MySQLConnection conn2 = new MySQLConnection(Main.getMySQLConnectionDetails());
@@ -183,8 +167,8 @@ public class FriendCommand implements CommandExecutor
 
                                 while (resultSet.next())
                                 {
-                                    String test2 = resultSet.getString("target_uuid");
-                                    OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(test2));
+                                    String targetStringUUID = resultSet.getString("target_uuid");
+                                    OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(targetStringUUID));
 
                                     if (offlinePlayer.hasPlayedBefore())
                                     {
@@ -207,6 +191,45 @@ public class FriendCommand implements CommandExecutor
                 {
                     e.printStackTrace();
                 }
+            }else if(label.equalsIgnoreCase("faccept"))
+            {
+                FriendCommand.statusOfAccept = true;
+
+                if(statusOfAccept)
+                {
+                    try
+                    {
+                        requestUUID = player.getUniqueId().toString();
+                        
+                        MySQLConnection conn = new MySQLConnection(Main.getMySQLConnectionDetails());
+                        PreparedStatement ps = conn.open().prepareStatement("INSERT INTO Frinto_Friends (requester_uuid, target_uuid, accept_status, time_stamp) VALUES (?,?,?,?);");
+
+                        ps.setString(1, requestUUID);
+                        ps.setString(2, targetUUID);
+                        ps.setInt(3, 0);
+                        Calendar calendar = Calendar.getInstance();
+                        java.sql.Timestamp ourJavaTimestampObject = new java.sql.Timestamp(calendar.getTime().getTime());
+                        ps.setTimestamp(4, ourJavaTimestampObject);
+
+                        conn.doUpdate(ps);
+                        sender.sendMessage("player accepted the friend request and has been added!");
+                        String nameOfTarget = Bukkit.getServer().getOfflinePlayer(UUID.fromString(targetUUID)).getName();
+
+                        player.sendMessage(ChatColor.BLUE + "User " + (nameOfTarget) + " has been added");
+                    } catch (SQLException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                
+            }else if(label.equalsIgnoreCase("fdecline"))
+            {
+                FriendCommand.statusOfAccept = false;
+                
+                if(statusOfAccept == false)
+                {
+                    sender.sendMessage(ChatColor.RED +"player has declined or hasn't accepted the friend request!");
+                }
             }
         } else
 
@@ -218,7 +241,7 @@ public class FriendCommand implements CommandExecutor
         return false;
     }
 
-    private boolean sendFriendRequest(String name, String arg)
+    private void sendFriendRequest(String name, String arg)
     {
         Player targetPlayer = Bukkit.getPlayerExact(arg);
         Player sender = Bukkit.getPlayerExact(name);
@@ -228,16 +251,28 @@ public class FriendCommand implements CommandExecutor
             
             if(targetPlayer.isOnline())
             {
+                
+                //TESTING TESTING TESTING
+                TextComponent acceptMsg = new TextComponent( "CLICK ME [Accept]" );
+                acceptMsg.setColor(net.md_5.bungee.api.ChatColor.GREEN);
+                acceptMsg.setBold(true);
+                acceptMsg.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/faccept" ));
+                TextComponent declineMsg = new TextComponent( "CLICK ME [Decline]" );
+                declineMsg.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND,  "/fdecline"));
+                declineMsg.setColor(net.md_5.bungee.api.ChatColor.RED);
+                declineMsg.setBold(true);
+                
                 targetPlayer.sendMessage(ChatColor.AQUA + "You recieved a friend request from: " + sender.getName());
-                return true; 
+
+                targetPlayer.spigot().sendMessage(acceptMsg);
+                targetPlayer.spigot().sendMessage(declineMsg);
+                
             }
         } 
         else
         {
             sender.sendMessage("Player is not online!");
-            return false;
         }
-        return false;
     }
 
 
