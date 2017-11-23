@@ -1,7 +1,6 @@
 package com.frinto.friends;
 
 import me.Stijn.MPCore.Global.database.MySQLConnection;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -10,7 +9,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.security.PublicKey;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -227,6 +225,7 @@ public class FriendCommand implements CommandExecutor
 
         if (targetPlayer != null)
         {
+            
             if(targetPlayer.isOnline())
             {
                 targetPlayer.sendMessage(ChatColor.AQUA + "You recieved a friend request from: " + sender.getName());
