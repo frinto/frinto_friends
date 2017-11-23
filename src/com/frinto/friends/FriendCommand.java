@@ -214,26 +214,24 @@ public class FriendCommand implements CommandExecutor
                         requestUUID = requesterPlayer.getUniqueId().toString();
 
                         MySQLConnection conn = new MySQLConnection(Main.getMySQLConnectionDetails());
-                        PreparedStatement ps = conn.open().prepareStatement("INSERT INTO Frinto_Friends (requester_uuid, target_uuid, accept_status, time_stamp) VALUES (?,?,?,?);");
+                        PreparedStatement ps = conn.open().prepareStatement("INSERT INTO Frinto_Friends (requester_uuid, target_uuid, time_stamp) VALUES (?,?,?);");
 
                         ps.setString(1, requestUUID);
                         ps.setString(2, targetUUID);
-                        ps.setInt(3, 0);
                         Calendar calendar = Calendar.getInstance();
                         java.sql.Timestamp ourJavaTimestampObject = new java.sql.Timestamp(calendar.getTime().getTime());
-                        ps.setTimestamp(4, ourJavaTimestampObject);
+                        ps.setTimestamp(3, ourJavaTimestampObject);
 
                         conn.doUpdate(ps);
 
                         MySQLConnection conn33 = new MySQLConnection(Main.getMySQLConnectionDetails());
-                        PreparedStatement ps33 = conn33.open().prepareStatement("INSERT INTO Frinto_Friends (requester_uuid, target_uuid, accept_status, time_stamp) VALUES (?,?,?,?);");
+                        PreparedStatement ps33 = conn33.open().prepareStatement("INSERT INTO Frinto_Friends (requester_uuid, target_uuid, time_stamp) VALUES (?,?,?);");
 
                         ps33.setString(1, targetUUID);
                         ps33.setString(2, requestUUID);
-                        ps33.setInt(3, 0);
                         Calendar calendar33 = Calendar.getInstance();
                         java.sql.Timestamp ourJavaTimestampObject33 = new java.sql.Timestamp(calendar.getTime().getTime());
-                        ps33.setTimestamp(4, ourJavaTimestampObject);
+                        ps33.setTimestamp(3, ourJavaTimestampObject);
 
                         conn33.doUpdate(ps33);
                         

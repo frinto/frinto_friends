@@ -20,8 +20,7 @@ public class Main extends JavaPlugin implements Listener
     {
     	new MySQLConnection(Main.getMySQLConnectionDetails()).doUpdate("CREATE TABLE IF NOT EXISTS Frinto_Friends(" + 
                 "requester_uuid varchar(36) NOT NULL," + 
-                "target_uuid varchar(36) NOT NULL," + 
-                "accept_status int(1) NOT NULL," +
+                "target_uuid varchar(36) NOT NULL," +
                 "time_stamp timestamp NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
     	
         registerCommands();
