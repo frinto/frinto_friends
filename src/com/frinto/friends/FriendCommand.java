@@ -132,6 +132,9 @@ public class FriendCommand implements CommandExecutor
                             ps777.setString(2, targetUUID);
 
                             conn777.doUpdate(ps777);
+                            String nameOfTarget = Bukkit.getServer().getOfflinePlayer(UUID.fromString(targetUUID)).getName();
+
+                            player.sendMessage(ChatColor.BLUE + "User " + (nameOfTarget) + " has been removed");
                         } catch (SQLException e)
                         {
                             e.printStackTrace();
@@ -149,11 +152,6 @@ public class FriendCommand implements CommandExecutor
                         }
                     }
                 }
-
-
-                String nameOfTarget = Bukkit.getServer().getOfflinePlayer(UUID.fromString(targetUUID)).getName();
-
-                player.sendMessage(ChatColor.BLUE + "User " + (nameOfTarget) + " has been removed");
             } else if (label.equalsIgnoreCase("flist"))
             {
                 player.sendMessage(ChatColor.BLUE + "Here is your list of friends: ");
