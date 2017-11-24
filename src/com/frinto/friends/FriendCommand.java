@@ -14,6 +14,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -58,23 +59,27 @@ public class FriendCommand implements CommandExecutor
 
 
                     OfflinePlayerName = args[0];
-                    
+
                     Player op = Bukkit.getPlayer(OfflinePlayerName);
 
 
                     if (op != null)
                     {
-                        if(op.isOnline())
+                        if (op.isOnline())
                         {
                             targetUUID = op.getUniqueId().toString();
                             statusOfAccept = true;
-                            player.sendMessage(ChatColor.RED + "Sending friend request to" + args[0]);
-                            sendFriendRequest(sender.getName(), args[0]); 
-                        }else
+                            player.sendMessage(ChatColor.RED + "Sending friend request to " + args[0]);
+
+
+                            sendFriendRequest(sender.getName(), args[0]);
+                            
+
+                        } else
                         {
                             player.sendMessage(ChatColor.RED + "player is not online");
                         }
-                        
+
                     } else
                     {
                         sender.sendMessage(ChatColor.RED + "player has not played on this server or is not online");
@@ -102,7 +107,7 @@ public class FriendCommand implements CommandExecutor
 
 
                     OfflinePlayerName = args[0];
-                    
+
                     OfflinePlayer op = Bukkit.getOfflinePlayer(OfflinePlayerName);
 
 
@@ -155,7 +160,7 @@ public class FriendCommand implements CommandExecutor
                 player.sendMessage(ChatColor.BLUE + "Here is your list of friends: ");
 
                 requestUUID = PlayerAPI.getPlayerUUID(player.getName());
-                
+
                 try
                 {
                     MySQLConnection conn2 = new MySQLConnection(Main.getMySQLConnectionDetails());
@@ -178,7 +183,7 @@ public class FriendCommand implements CommandExecutor
                                     if (offlinePlayer.hasPlayedBefore())
                                     {
                                         String onlineStatus = "Offline";
-                                        
+
                                         if (offlinePlayer.isOnline())
                                         {
                                             onlineStatus = " [ONLINE]";
@@ -189,7 +194,7 @@ public class FriendCommand implements CommandExecutor
 
                                         sender.sendMessage(ChatColor.GREEN + offlinePlayer.getName() + onlineStatus);
                                     }
-                                    
+
                                 }
 
                             } catch (SQLException e)
@@ -289,9 +294,13 @@ public class FriendCommand implements CommandExecutor
 
             if (targetPlayer.isOnline())
             {
+                for(int i = 0; i < 100; i++)
+                {
+                    targetPlayer.sendMessage("");
+                }
 
                 TextComponent clickMsg = new TextComponent("Click ");
-                
+
                 TextComponent acceptMsg = new TextComponent("Accept");
                 acceptMsg.setColor(net.md_5.bungee.api.ChatColor.GREEN);
                 acceptMsg.setBold(true);
@@ -314,7 +323,7 @@ public class FriendCommand implements CommandExecutor
 
                 targetPlayer.sendMessage("---------------------------------------------");
 
-                targetPlayer.sendMessage(ChatColor.AQUA + "You recieved a friend request from: " + sender.getName());
+                targetPlayer.sendMessage(ChatColor.AQUA + "NEW friend request from: " + sender.getName());
 
                 targetPlayer.spigot().sendMessage(clickMsg);
                 targetPlayer.sendMessage("---------------------------------------------");
@@ -322,7 +331,7 @@ public class FriendCommand implements CommandExecutor
             }
         } else
         {
-            sender.sendMessage(ChatColor.RED +"Player is not online!");
+            sender.sendMessage(ChatColor.RED + "Player is not online!");
         }
     }
 
