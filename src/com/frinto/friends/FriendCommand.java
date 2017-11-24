@@ -1,5 +1,6 @@
 package com.frinto.friends;
 
+import me.Stijn.MPCore.Global.api.PlayerAPI;
 import me.Stijn.MPCore.Global.database.MySQLConnection;
 
 
@@ -13,7 +14,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -58,24 +58,26 @@ public class FriendCommand implements CommandExecutor
 
 
                     OfflinePlayerName = args[0];
+                    
+                    Player op = Bukkit.getPlayer(OfflinePlayerName);
 
 
-                    OfflinePlayer op = Bukkit.getServer().getOfflinePlayer(OfflinePlayerName);
-
-
-                    if (op.hasPlayedBefore())
+                    if (op != null)
                     {
-                        if(op.getPlayer().isOnline())
+                        if(op.isOnline())
                         {
                             targetUUID = op.getUniqueId().toString();
                             statusOfAccept = true;
                             player.sendMessage(ChatColor.RED + "sending friend request to....." + args[0]);
                             sendFriendRequest(sender.getName(), args[0]); 
+                        }else
+                        {
+                            player.sendMessage(ChatColor.RED + "player is not online");
                         }
                         
                     } else
                     {
-                        sender.sendMessage(ChatColor.RED + "player has not played on this server");
+                        sender.sendMessage(ChatColor.RED + "player has not played on this server or is not online");
 
                         try
                         {
@@ -101,8 +103,7 @@ public class FriendCommand implements CommandExecutor
 
                     OfflinePlayerName = args[0];
                     
-
-                    OfflinePlayer op = Bukkit.getServer().getOfflinePlayer(OfflinePlayerName);
+                    OfflinePlayer op = Bukkit.getOfflinePlayer(OfflinePlayerName);
 
 
                     if (op.hasPlayedBefore())
@@ -129,7 +130,7 @@ public class FriendCommand implements CommandExecutor
                             ps777.setString(2, targetUUID);
 
                             conn777.doUpdate(ps777);
-                            String nameOfTarget = Bukkit.getServer().getOfflinePlayer(UUID.fromString(targetUUID)).getName();
+                            String nameOfTarget = Bukkit.getOfflinePlayer(PlayerAPI.getPlayerUsername(targetUUID)).getName();
 
                             player.sendMessage(ChatColor.BLUE + "User " + (nameOfTarget) + " has been removed");
                         } catch (SQLException e)
@@ -153,8 +154,8 @@ public class FriendCommand implements CommandExecutor
             {
                 player.sendMessage(ChatColor.BLUE + "Here is your list of friends: ");
 
-                requestUUID = player.getUniqueId().toString();
-
+                requestUUID = PlayerAPI.getPlayerUUID(player.getName());
+                
                 try
                 {
                     MySQLConnection conn2 = new MySQLConnection(Main.getMySQLConnectionDetails());
@@ -177,6 +178,7 @@ public class FriendCommand implements CommandExecutor
                                     if (offlinePlayer.hasPlayedBefore())
                                     {
                                         String onlineStatus = "Offline";
+                                        
                                         if (offlinePlayer.isOnline())
                                         {
                                             onlineStatus = " [ONLINE]";
@@ -186,12 +188,8 @@ public class FriendCommand implements CommandExecutor
                                         }
 
                                         sender.sendMessage(ChatColor.GREEN + offlinePlayer.getName() + onlineStatus);
-                                    } else
-                                    {
-                                        sender.sendMessage(ChatColor.RED +"player has not played on this server");
                                     }
-
-                                    int age = 0;
+                                    
                                 }
 
                             } catch (SQLException e)
@@ -241,8 +239,8 @@ public class FriendCommand implements CommandExecutor
 
 
                         requesterPlayer.sendMessage(ChatColor.AQUA + "player accepted the friend request and has been added!");
-                        String nameOfTarget = Bukkit.getServer().getOfflinePlayer(UUID.fromString(targetUUID)).getName();
-                        String nameOfRequester = Bukkit.getServer().getOfflinePlayer(UUID.fromString(requestUUID)).getName();
+                        String nameOfTarget = Bukkit.getPlayer(PlayerAPI.getPlayerUsername(targetUUID)).getName();
+                        String nameOfRequester = Bukkit.getPlayer(PlayerAPI.getPlayerUsername(requestUUID)).getName();
 
                         player.sendMessage(ChatColor.BLUE + "User " + (nameOfRequester) + " has been added");
                         requesterPlayer.sendMessage(ChatColor.BLUE + "User " + (nameOfTarget) + " has been added");
@@ -293,8 +291,7 @@ public class FriendCommand implements CommandExecutor
             {
 
                 TextComponent clickMsg = new TextComponent("Click ");
-
-                //TESTING TESTING TESTING
+                
                 TextComponent acceptMsg = new TextComponent("Accept");
                 acceptMsg.setColor(net.md_5.bungee.api.ChatColor.GREEN);
                 acceptMsg.setBold(true);

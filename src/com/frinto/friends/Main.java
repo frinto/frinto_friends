@@ -1,6 +1,7 @@
 package com.frinto.friends;
 
 
+import me.Stijn.MPCore.Global.api.PlayerAPI;
 import me.Stijn.MPCore.Global.database.MySQLConnection;
 import me.Stijn.MPCore.Global.database.MySQLConnectionDetails;
 import org.bukkit.Bukkit;
@@ -50,10 +51,7 @@ public class Main extends JavaPlugin implements Listener
     public void onJoin(PlayerJoinEvent e)
     {
         Player joinedPlayer = e.getPlayer();
-        /*
-        "SELECT DISTINCT target_uuid FROM frinto_friends WHERE requester_uuid = ?;"
-         */
-
+        
         MySQLConnection connJoin = new MySQLConnection(Main.getMySQLConnectionDetails());
         try
         {
@@ -72,20 +70,18 @@ public class Main extends JavaPlugin implements Listener
                         while (resultSet.next())
                         {
                             String targetStringUUID = resultSet.getString("target_uuid");
-                            OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(targetStringUUID));
+                            Player targetPlayer = Bukkit.getPlayer(PlayerAPI.getPlayerUsername(targetStringUUID));
 
-                            if (offlinePlayer.hasPlayedBefore())
+                            if (targetPlayer != null)
                             {
-                                if (offlinePlayer.isOnline())
+                                if (targetPlayer.isOnline())
                                 {
-                                    Player targetPlayer = offlinePlayer.getPlayer();
-                                    
                                     targetPlayer.sendMessage(ChatColor.AQUA + "Your friend " + joinedPlayer.getName() + " is online!");
                                 }
                             }
+                            
                         }
-
-
+                        
                     } catch (SQLException e1)
                     {
                         e1.printStackTrace();
