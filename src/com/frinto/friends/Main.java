@@ -20,23 +20,23 @@ import java.util.UUID;
 
 public class Main extends JavaPlugin implements Listener
 {
-    
+
     public static Player requester;
 
-	private static MySQLConnectionDetails conn_details = new MySQLConnectionDetails("mp_s_g_FriendSystem", "mp_u_Q7nGBf", "PYgzVG8oURnVWzTu");
-	
+    private static MySQLConnectionDetails conn_details = new MySQLConnectionDetails("mp_s_g_FriendSystem", "mp_u_Q7nGBf", "PYgzVG8oURnVWzTu");
+
     @Override
     public void onEnable()
     {
-        
-        
-    	new MySQLConnection(Main.getMySQLConnectionDetails()).doUpdate("CREATE TABLE IF NOT EXISTS Frinto_Friends(" + 
-                "requester_uuid varchar(36) NOT NULL," + 
+
+
+        new MySQLConnection(Main.getMySQLConnectionDetails()).doUpdate("CREATE TABLE IF NOT EXISTS Frinto_Friends(" +
+                "requester_uuid varchar(36) NOT NULL," +
                 "target_uuid varchar(36) NOT NULL," +
                 "time_stamp timestamp NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
 
         getServer().getPluginManager().registerEvents(this, this);
-    	
+
         registerCommands();
     }
 
@@ -45,7 +45,7 @@ public class Main extends JavaPlugin implements Listener
     {
         //TODO
     }
-    
+
     @EventHandler
     public void onJoin(PlayerJoinEvent e)
     {
@@ -59,7 +59,7 @@ public class Main extends JavaPlugin implements Listener
         {
             PreparedStatement statementToEx = connJoin.open().prepareStatement("SELECT DISTINCT target_uuid FROM Frinto_Friends WHERE requester_uuid = ?;");
             statementToEx.setString(1, joinedPlayer.getUniqueId().toString());
-            
+
             connJoin.doQuery(statementToEx, new MySQLConnection.MySQLConnectionBeforeCloseCallback()
             {
                 @Override
@@ -68,15 +68,15 @@ public class Main extends JavaPlugin implements Listener
                     try
                     {
                         resultSet = statementToEx.getResultSet();
-                        
-                        while(resultSet.next())
+
+                        while (resultSet.next())
                         {
                             String targetStringUUID = resultSet.getString("target_uuid");
                             OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(targetStringUUID));
-                            
-                            if(offlinePlayer.hasPlayedBefore())
+
+                            if (offlinePlayer.hasPlayedBefore())
                             {
-                                if(offlinePlayer.isOnline())
+                                if (offlinePlayer.isOnline())
                                 {
                                     Player targetPlayer = offlinePlayer.getPlayer();
                                     
@@ -84,8 +84,8 @@ public class Main extends JavaPlugin implements Listener
                                 }
                             }
                         }
-                        
-                        
+
+
                     } catch (SQLException e1)
                     {
                         e1.printStackTrace();
@@ -94,15 +94,15 @@ public class Main extends JavaPlugin implements Listener
 
                 }
             });
-            
-            
+
+
         } catch (SQLException e1)
         {
             e1.printStackTrace();
         }
     }
-    
-    
+
+
     public void registerCommands()
     {
         getCommand("friends").setExecutor(new FriendCommand());
@@ -112,11 +112,11 @@ public class Main extends JavaPlugin implements Listener
         getCommand("faccept").setExecutor(new FriendCommand());
         getCommand("fdecline").setExecutor(new FriendCommand());
     }
-    
-    public static MySQLConnectionDetails getMySQLConnectionDetails() {
-    	return conn_details;
+
+    public static MySQLConnectionDetails getMySQLConnectionDetails()
+    {
+        return conn_details;
     }
-    
-    
-    
+
+
 }
