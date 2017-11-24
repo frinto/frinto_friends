@@ -67,7 +67,7 @@ public class FriendCommand implements CommandExecutor
                     if (op.hasPlayedBefore() || (op.getPlayer().isOnline()))
                     {
                         targetUUID = op.getUniqueId().toString();
-
+                        statusOfAccept = true;
                         player.sendMessage(ChatColor.RED + "sending friend request to....." + args[0]);
                         sendFriendRequest(sender.getName(), args[0]);
 
@@ -211,12 +211,11 @@ public class FriendCommand implements CommandExecutor
                 }
             } else if (label.equalsIgnoreCase("faccept"))
             {
-                player.sendMessage(ChatColor.AQUA + "You have Accepted the friend request!");
                 
-                FriendCommand.statusOfAccept = true;
-
+                
                 if (statusOfAccept)
                 {
+                    player.sendMessage(ChatColor.AQUA + "You have Accepted the friend request!");
                     try
                     {
                         targetUUID = player.getUniqueId().toString();
@@ -252,22 +251,29 @@ public class FriendCommand implements CommandExecutor
 
                         player.sendMessage(ChatColor.BLUE + "User " + (nameOfRequester) + " has been added");
                         requesterPlayer.sendMessage(ChatColor.BLUE + "User " + (nameOfTarget) + " has been added");
+                        statusOfAccept = false;
                     } catch (SQLException e)
                     {
                         e.printStackTrace();
                     }
+                }else
+                {
+                    player.sendMessage(ChatColor.RED + "you cant click anymore");
                 }
 
             } else if (label.equalsIgnoreCase("fdecline"))
             {
-                player.sendMessage(ChatColor.AQUA + "You have declined the friend request!");
                 
-                FriendCommand.statusOfAccept = false;
                 Player requesterPlayer = Main.requester;
 
-                if (statusOfAccept == false)
+                if (statusOfAccept)
                 {
+                    player.sendMessage(ChatColor.AQUA + "You have declined the friend request!");
                     requesterPlayer.sendMessage(ChatColor.RED + "Player has declined!");
+                    statusOfAccept = false;
+                }else
+                {
+                    player.sendMessage(ChatColor.RED + "you cant click anymore");
                 }
             }
         } else
