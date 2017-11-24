@@ -35,6 +35,15 @@ public class Main extends JavaPlugin implements Listener
                 "requester_uuid varchar(36) NOT NULL," +
                 "target_uuid varchar(36) NOT NULL," +
                 "time_stamp timestamp NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
+        
+        
+        
+        new MySQLConnection(Main.getMySQLConnectionDetails()).doUpdate("CREATE TABLE IF NOT EXISTS Friend_Requests(" +
+                "fromUser VARCHAR(36) NOT NULL," +
+                "toUser VARCHAR(36) NOT NULL," +
+                "requestCompleted INT(1) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
+        
+        
 
         getServer().getPluginManager().registerEvents(this, this);
 
