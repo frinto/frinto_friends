@@ -68,7 +68,7 @@ public class FriendCommand implements CommandExecutor
                         {
                             targetUUID = op.getUniqueId().toString();
                             statusOfAccept = true;
-                            player.sendMessage(ChatColor.RED + "sending friend request to....." + args[0]);
+                            player.sendMessage(ChatColor.RED + "Sending friend request to" + args[0]);
                             sendFriendRequest(sender.getName(), args[0]); 
                         }else
                         {
