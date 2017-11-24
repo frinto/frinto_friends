@@ -15,6 +15,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.nio.file.OpenOption;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -138,6 +139,13 @@ public class FriendCommand implements CommandExecutor
                             String nameOfTarget = Bukkit.getOfflinePlayer(PlayerAPI.getPlayerUsername(targetUUID)).getName();
 
                             player.sendMessage(ChatColor.BLUE + "User " + (nameOfTarget) + " has been removed");
+                            
+                            if(op.isOnline())
+                            {
+                                Player targPlayer = op.getPlayer();
+                                targPlayer.sendMessage(ChatColor.GREEN + "your friend " + player.getName() + " has removed you!");
+                            }
+                            
                         } catch (SQLException e)
                         {
                             e.printStackTrace();
