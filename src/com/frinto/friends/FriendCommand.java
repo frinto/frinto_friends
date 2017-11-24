@@ -116,12 +116,22 @@ public class FriendCommand implements CommandExecutor
                         {
 
                             MySQLConnection conn = new MySQLConnection(Main.getMySQLConnectionDetails());
-                            PreparedStatement ps = conn.open().prepareStatement("DELETE FROM Frinto_Friends WHERE target_uuid = ?;");
+                            PreparedStatement ps = conn.open().prepareStatement("DELETE FROM Frinto_Friends WHERE target_uuid = ? AND requester_uuid = ?;");
 
 
                             ps.setString(1, targetUUID);
+                            ps.setString(2, requestUUID);
 
                             conn.doUpdate(ps);
+
+                            MySQLConnection conn777 = new MySQLConnection(Main.getMySQLConnectionDetails());
+                            PreparedStatement ps777 = conn777.open().prepareStatement("DELETE FROM Frinto_Friends WHERE target_uuid = ? AND requester_uuid = ?;");
+
+
+                            ps777.setString(1, requestUUID);
+                            ps777.setString(2, targetUUID);
+
+                            conn777.doUpdate(ps777);
                         } catch (SQLException e)
                         {
                             e.printStackTrace();
