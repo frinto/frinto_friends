@@ -1,5 +1,6 @@
 package com.frinto.friends;
 
+import com.oracle.deploy.update.UpdateCheck;
 import me.Stijn.MPCore.Global.api.PlayerAPI;
 import me.Stijn.MPCore.Global.database.MySQLConnection;
 
@@ -234,6 +235,49 @@ public class FriendCommand implements CommandExecutor
             } else if (label.equalsIgnoreCase("faccept"))
             {
 
+                MySQLConnection selectConn = new MySQLConnection(Main.getMySQLConnectionDetails());
+
+                try
+                {
+                    PreparedStatement selectPS = selectConn.open().prepareStatement("SELECT DISTINCT * FROM Friend_Requests WHERE requestCompleted != ? AND toUser = ?");
+                    
+                    selectPS.setInt(1,1);
+                    selectPS.setString(2, player.getName());
+                    
+                    selectConn.doQuery(selectPS, new MySQLConnection.MySQLConnectionBeforeCloseCallback()
+                    {
+                        @Override
+                        public void executeBeforeClose(ResultSet resultSet)
+                        {
+
+                            try
+                            {
+                                resultSet = selectPS.executeQuery();
+
+                                while(resultSet.next())
+                                {
+                                    String fromUser = resultSet.getString("fromUser");
+                                    
+                                    if(!fromUser.equals(player.getName()))
+                                    {
+                                        player.sendMessage(fromUser);
+                                    }
+                                    
+                                }
+                                
+                            } catch (SQLException e)
+                            {
+                                e.printStackTrace();
+                            }
+                            
+                        }
+                    });
+                    
+                    
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                }
 
                 if (statusOfAccept)
                 {
@@ -273,6 +317,16 @@ public class FriendCommand implements CommandExecutor
 
                         player.sendMessage(ChatColor.BLUE + "User " + (nameOfRequester) + " has been added");
                         requesterPlayer.sendMessage(ChatColor.BLUE + "User " + (nameOfTarget) + " has been added");
+                        
+                        MySQLConnection connFriendRequest = new MySQLConnection(Main.getMySQLConnectionDetails());
+                        PreparedStatement psFRequest = connFriendRequest.open().prepareStatement("UPDATE Friend_Requests SET requestCompleted = ? WHERE toUser = ? AND fromUser = ?;");
+                        
+                        psFRequest.setInt(1,1);
+                        psFRequest.setString(2, player.getName());
+                        psFRequest.setString(3, requesterPlayer.getName());
+                        
+                        connFriendRequest.doUpdate(psFRequest);
+                        
                         statusOfAccept = false;
                     } catch (SQLException e)
                     {
@@ -292,7 +346,27 @@ public class FriendCommand implements CommandExecutor
                 {
                     player.sendMessage(ChatColor.AQUA + "You have declined the friend request!");
                     requesterPlayer.sendMessage(ChatColor.RED + "Player has declined!");
-                    statusOfAccept = false;
+
+                    MySQLConnection connFriendRequest11 = new MySQLConnection(Main.getMySQLConnectionDetails());
+                    
+                    try
+                    {
+                        PreparedStatement psFRequest11 = connFriendRequest11.open().prepareStatement("UPDATE Friend_Requests SET requestCompleted = ? WHERE toUser = ? AND fromUser = ?;");
+
+                        psFRequest11.setInt(1,1);
+                        psFRequest11.setString(2, player.getName());
+                        psFRequest11.setString(3, requesterPlayer.getName());
+
+                        connFriendRequest11.doUpdate(psFRequest11);
+                        
+                        statusOfAccept = false;
+                        
+                    } catch (SQLException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                    
                 } else
                 {
                     player.sendMessage(ChatColor.RED + "you cant click anymore");
@@ -318,11 +392,6 @@ public class FriendCommand implements CommandExecutor
 
             if (targetPlayer.isOnline())
             {
-                for(int i = 0; i < 100; i++)
-                {
-                    targetPlayer.sendMessage("");
-                }
-
                 TextComponent clickMsg = new TextComponent("Click ");
 
                 TextComponent acceptMsg = new TextComponent("Accept");
