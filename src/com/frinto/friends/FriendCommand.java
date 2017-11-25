@@ -72,27 +72,32 @@ public class FriendCommand implements CommandExecutor
                             targetUUID = op.getUniqueId().toString();
                             statusOfAccept = true;
                             player.sendMessage(ChatColor.RED + "Sending friend request to " + args[0]);
-
-                            MySQLConnection requestConn = new MySQLConnection(Main.getMySQLConnectionDetails());
-
-                            try
-                            {
-                                PreparedStatement requestPs = requestConn.open().prepareStatement("INSERT INTO Friend_Requests(fromUser, toUser, requestCompleted) VALUES(?,?,?);");
-                                
-                                requestPs.setString(1, sender.getName());
-                                requestPs.setString(2, args[0]);
-                                requestPs.setInt(3, 0);
-                                
-                                requestConn.doUpdate(requestPs);
-                                
-                            } catch (SQLException e)
-                            {
-                                e.printStackTrace();
-                            }
-
-                            sendFriendRequest(sender.getName(), args[0]);
                             
+                            if(!player.getName().equals(PlayerAPI.getPlayerUsername(targetUUID)))
+                            {
+                                MySQLConnection requestConn = new MySQLConnection(Main.getMySQLConnectionDetails());
 
+                                try
+                                {
+                                    PreparedStatement requestPs = requestConn.open().prepareStatement("INSERT INTO Friend_Requests(fromUser, toUser, requestCompleted) VALUES(?,?,?);");
+
+                                    requestPs.setString(1, sender.getName());
+                                    requestPs.setString(2, args[0]);
+                                    requestPs.setInt(3, 0);
+
+                                    requestConn.doUpdate(requestPs);
+
+                                } catch (SQLException e)
+                                {
+                                    e.printStackTrace();
+                                }
+
+                                sendFriendRequest(sender.getName(), args[0]);
+                            }else
+                            {
+                                player.sendMessage(ChatColor.RED + "ERROR YOU CANNOT ADD YOURSELF");
+                            }
+                            
                         } else
                         {
                             player.sendMessage(ChatColor.RED + "player is not online");
