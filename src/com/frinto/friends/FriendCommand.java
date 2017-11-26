@@ -64,8 +64,10 @@ public class FriendCommand implements CommandExecutor
 
                 ItemStack spawnItem = nameItem(Material.COMPASS, ChatColor.AQUA + "Show friend commands");
                 ItemStack spawnItem2 = nameItem(Material.CAKE, ChatColor.AQUA + "Show friends list");
+                ItemStack spawnItem3 = nameItem(Material.CACTUS, ChatColor.AQUA + "Add Friends");
                 inventory.setItem(4, spawnItem);
                 inventory.setItem(1, spawnItem2);
+                inventory.setItem(6, spawnItem3);
                 player.openInventory(inventory);
                 
                 
