@@ -81,8 +81,8 @@ public class FriendCommand implements CommandExecutor
                                 {
                                     PreparedStatement requestPs = requestConn.open().prepareStatement("INSERT INTO Friend_Requests(fromUser, toUser, requestCompleted) VALUES(?,?,?);");
 
-                                    requestPs.setString(1, sender.getName());
-                                    requestPs.setString(2, args[0]);
+                                    requestPs.setString(1, PlayerAPI.getPlayerUUID(sender.getName()));
+                                    requestPs.setString(2, PlayerAPI.getPlayerUUID(args[0]));
                                     requestPs.setInt(3, 0);
 
                                     requestConn.doUpdate(requestPs);
@@ -282,8 +282,8 @@ public class FriendCommand implements CommandExecutor
                         PreparedStatement psFRequest = connFriendRequest.open().prepareStatement("UPDATE Friend_Requests SET requestCompleted = ? WHERE toUser = ? AND fromUser = ?;");
                         
                         psFRequest.setInt(1,1);
-                        psFRequest.setString(2, player.getName());
-                        psFRequest.setString(3, requesterPlayer.getName());
+                        psFRequest.setString(2, PlayerAPI.getPlayerUUID(player.getName()));
+                        psFRequest.setString(3, PlayerAPI.getPlayerUUID(requesterPlayer.getName()));
                         
                         connFriendRequest.doUpdate(psFRequest);
                         
@@ -296,7 +296,7 @@ public class FriendCommand implements CommandExecutor
                             PreparedStatement selectPS = selectConn.open().prepareStatement("SELECT DISTINCT * FROM Friend_Requests WHERE requestCompleted = ? AND toUser = ?");
 
                             selectPS.setInt(1,0);
-                            selectPS.setString(2, player.getName());
+                            selectPS.setString(2, PlayerAPI.getPlayerUUID(player.getName()));
 
                             selectConn.doQuery(selectPS, new MySQLConnection.MySQLConnectionBeforeCloseCallback()
                             {
@@ -312,9 +312,9 @@ public class FriendCommand implements CommandExecutor
                                         {
                                             String fromUser = resultSet.getString("fromUser");
 
-                                            if(!fromUser.equals(player.getName()))
+                                            if(!fromUser.equals(PlayerAPI.getPlayerUUID(player.getName())))
                                             {
-                                                Player fromUserSentRequest = Bukkit.getPlayer(fromUser);
+                                                Player fromUserSentRequest = Bukkit.getPlayer(PlayerAPI.getPlayerUsername(fromUser));
                                                 
                                                 if(fromUserSentRequest != null)
                                                 {
@@ -369,12 +369,55 @@ public class FriendCommand implements CommandExecutor
                         PreparedStatement psFRequest11 = connFriendRequest11.open().prepareStatement("UPDATE Friend_Requests SET requestCompleted = ? WHERE toUser = ? AND fromUser = ?;");
 
                         psFRequest11.setInt(1,1);
-                        psFRequest11.setString(2, player.getName());
-                        psFRequest11.setString(3, requesterPlayer.getName());
+                        psFRequest11.setString(2, PlayerAPI.getPlayerUUID(player.getName()));
+                        psFRequest11.setString(3, PlayerAPI.getPlayerUUID(requesterPlayer.getName()));
 
                         connFriendRequest11.doUpdate(psFRequest11);
                         
                         statusOfAccept = false;
+                        
+                        MySQLConnection selectConn2 = new MySQLConnection(Main.getMySQLConnectionDetails());
+                        PreparedStatement selectPS2 = selectConn2.open().prepareStatement("SELECT DISTINCT * FROM Friend_Requests WHERE requestCompleted = ? AND toUser = ?");
+
+                        selectPS2.setInt(1,0);
+                        selectPS2.setString(2, PlayerAPI.getPlayerUUID(player.getName()));
+
+                        selectConn2.doQuery(selectPS2, new MySQLConnection.MySQLConnectionBeforeCloseCallback()
+                        {
+                            @Override
+                            public void executeBeforeClose(ResultSet resultSet)
+                            {
+                                try
+                                {
+                                    resultSet = selectPS2.executeQuery();
+
+                                    while(resultSet.next())
+                                    {
+                                        String fromUser = resultSet.getString("fromUser");
+
+                                        if(!fromUser.equals(PlayerAPI.getPlayerUUID(player.getName())))
+                                        {
+                                            Player fromUserSentRequest = Bukkit.getPlayer(PlayerAPI.getPlayerUsername(fromUser));
+
+                                            if(fromUserSentRequest != null)
+                                            {
+                                                if(fromUserSentRequest.isOnline())
+                                                {
+                                                    fromUserSentRequest.chat("/fadd " + player.getName());
+                                                }
+                                            }
+
+                                        }
+
+                                    }
+
+                                } catch (SQLException e)
+                                {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                        
                         
                     } catch (SQLException e)
                     {
