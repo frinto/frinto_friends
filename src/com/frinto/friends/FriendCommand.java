@@ -10,11 +10,16 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.nio.file.OpenOption;
 import java.sql.PreparedStatement;
@@ -29,6 +34,19 @@ public class FriendCommand implements CommandExecutor
     private static boolean statusOfAccept = false;
     private String requestUUID = null;
     private String targetUUID = null;
+    
+    private ItemStack nameItem(ItemStack item, String name)
+    {
+        ItemMeta meta =  item.getItemMeta();
+        meta.setDisplayName(name);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private ItemStack nameItem(Material item, String name)
+    {
+        return nameItem(new ItemStack(item),name);
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
@@ -41,9 +59,17 @@ public class FriendCommand implements CommandExecutor
 
             if (label.equalsIgnoreCase("friends"))
             {
-                sender.sendMessage("/fadd <name>");
-                sender.sendMessage("/fremove <name>");
-                sender.sendMessage("/flist");
+                //---------------GUI-------------------------
+                Inventory inventory = Bukkit.createInventory(null, 9, "Friends System");
+
+                ItemStack spawnItem = nameItem(Material.COMPASS, ChatColor.AQUA + "Show friend commands");
+                ItemStack spawnItem2 = nameItem(Material.CAKE, ChatColor.AQUA + "Show friends list");
+                inventory.setItem(4, spawnItem);
+                inventory.setItem(1, spawnItem2);
+                player.openInventory(inventory);
+                
+                
+                //-------------------------------------------
                 return true;
             } else if (label.equalsIgnoreCase("fadd"))
             {

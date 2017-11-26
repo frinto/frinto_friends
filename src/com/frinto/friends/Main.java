@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.PreparedStatement;
@@ -29,8 +30,7 @@ public class Main extends JavaPlugin implements Listener
     @Override
     public void onEnable()
     {
-
-
+        
         new MySQLConnection(Main.getMySQLConnectionDetails()).doUpdate("CREATE TABLE IF NOT EXISTS Frinto_Friends(" +
                 "requester_uuid varchar(36) NOT NULL," +
                 "target_uuid varchar(36) NOT NULL," +
@@ -48,6 +48,7 @@ public class Main extends JavaPlugin implements Listener
         getServer().getPluginManager().registerEvents(this, this);
 
         registerCommands();
+        registerEvents();
     }
 
     @Override
@@ -116,6 +117,13 @@ public class Main extends JavaPlugin implements Listener
         getCommand("flist").setExecutor(new FriendCommand());
         getCommand("faccept").setExecutor(new FriendCommand());
         getCommand("fdecline").setExecutor(new FriendCommand());
+    }
+    
+    public void registerEvents()
+    {
+        PluginManager pluginManager = getServer().getPluginManager();
+        
+        pluginManager.registerEvents(new FriendInventoryClick(), this);
     }
 
     public static MySQLConnectionDetails getMySQLConnectionDetails()
